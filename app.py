@@ -1,46 +1,34 @@
 import streamlit as st
+import sqlite3
 
-st.markdown('## This is Markdown')
-st.markdown('Streamlit is  **_really_ cool**')
+con = sqlite3.connect('db.db')
+cur = con.cursor()
 
-st.caption('This is a string that explains something above')
+def login_user(id, password):
+    cur.execute(f"SELECT * " 
+                f"FROM users "
+                f"WHERE id='{id}'and password='{password}'")
+    return cur.fetchone()
 
-code = '''def hello():
-    print("Hello, Streamlit!")'''
+menu = st.sidebar.selectbox('Menu', options =['Sign in', 'Sign up', 'Members list'])
 
-st.code(code, language='python')
+if menu == 'Sign in':
+    st.subheader('Sign in')
 
-if st.button('button'):
-    st.write('success')
-else:
-    st.write('hello')
+    login_id = st.text_input('id', placeholder='enter your id')
+    login_pw = st.text_input('password',
+                             placeholder='enter your password'
+                             , type='password')
+    login_btn = st.button('Sign in')
 
-text_contents = 'download file'
-st.download_button('download', text_contents)
-
-st.subheader('1, Checkbox test')
-a = st.checkbox('no1')
-b = st.checkbox('no2')
-c = st.checkbox('no3')
-
-if a:
-    st.write('1 is chosen')
-if b:
-    st.write('2 is chosen')
-if c :
-    st.write('3 is chosen')
-
-st.subheader('radiobutton')
-food = st.radio(
-    'what is your favorite food',
-    ('sushi', 'ramen', 'rice')
-)
+    if login_btn:
+        user_info = login_user(login_id, login_pw)
+        st.write('{}님, 환영합니다.'.format(user_info[4]))
 
 
-if food == 'sushi':
-    st.write('you selected sushi')
-elif food == 'ramen':
-    st.write('you selected reamen')
-elif food == 'rice':
-    st.write('you selected rice'
-             )
+if menu == 'Sign up':
+    st.subheader('Sign up')
+    st.sidebar.subheader('Sign up')
+if menu == 'Members list':
+    st.subheader('Members list')
+    st.sidebar.subheader('Members list')
